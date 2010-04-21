@@ -6,7 +6,7 @@
 
 pkgname=xbmc-svn
 pkgver=29411
-pkgrel=1
+pkgrel=2
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
 conflicts=('xbmc' 'xbmc-pulse')
@@ -18,15 +18,17 @@ depends=('alsa-lib' 'curl' 'enca' 'faac' 'freetype2' 'fribidi' 'gawk' 'glew'
          'libxinerama' 'libxrandr' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'sqlite3'
          'tre' 'unzip' 'xorg-server' 'libcdio' 'faad2' 'libsamplerate' 'smbclient' 
          'libmms' 'xorg-utils' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug'
-         'libvdpau' 'cvs')
+         'libvdpau')
 makedepends=('subversion' 'autoconf' 'automake' 'boost' 'cmake' 'gcc' 'gperf' 
              'libtool>=2.2.6a-1' 'make' 'nasm' 'patch' 'pkgconfig' 'zip' 'flex' 
-             'bison')
+             'bison' 'cvs')
 optdepends=('lirc: remote controller support'
             'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED'
             'avahi: to use zerconf features (remote, etc...)'
             'unrar: access compressed files without unpacking them'
-            'devicekit-power: used to trigger suspend functionality')
+            'upower: used to trigger suspend functionality'
+            'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
+            'libssh: support for sshfs')
 install="${pkgname}.install"
 source=(
     "FEH.sh" 
