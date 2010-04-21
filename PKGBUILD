@@ -1,10 +1,11 @@
+# Contributor: DonVla <donvla@users.sourceforge.net>
 # Contributors : Ralf Barth <archlinux dot org at haggy dot org>
 #
 # Original credits go to Edgar Hucek <gimli at dark-green dot com>
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=28276
+pkgver=29411
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
