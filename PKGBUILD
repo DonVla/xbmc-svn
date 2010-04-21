@@ -18,7 +18,7 @@ depends=('alsa-lib' 'curl' 'enca' 'faac' 'freetype2' 'fribidi' 'gawk' 'glew'
          'libxinerama' 'libxrandr' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'sqlite3'
          'tre' 'unzip' 'xorg-server' 'libcdio' 'faad2' 'libsamplerate' 'smbclient' 
          'libmms' 'xorg-utils' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug'
-         'libvdpau')
+         'libvdpau' 'cvs')
 makedepends=('subversion' 'autoconf' 'automake' 'boost' 'cmake' 'gcc' 'gperf' 
              'libtool>=2.2.6a-1' 'make' 'nasm' 'patch' 'pkgconfig' 'zip' 'flex' 
              'bison')
@@ -74,7 +74,7 @@ build() {
     sed -i -e 's:/usr/bin/lsb_release -d:cat /etc/arch-release:' xbmc/utils/SystemInfo.cpp || return 1
 
     msg "Configuring XBMC" 
-    ./bootstrap
+    ./bootstrap || return 1
     ./configure --prefix=${_prefix} \
                 --disable-external-ffmpeg \
                 --disable-external-python \
