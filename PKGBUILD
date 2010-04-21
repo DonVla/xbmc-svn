@@ -27,12 +27,11 @@ optdepends=('lirc: remote controller support'
             'avahi: to use zerconf features (remote, etc...)'
             'unrar: access compressed files without unpacking them'
             'devicekit-power: used to trigger suspend functionality')
-install=("${pkgname}.install")
+install="${pkgname}.install"
 source=(
     "FEH.sh" 
     "http://trac.xbmc.org/raw-attachment/ticket/8552/projectM.diff"
 )
-noextract=()
 md5sums=(
     "c3e2ab79b9965f1a4a048275d5f222c4" 
     "70eed644485de10cb80927bc1a3c77c7"
