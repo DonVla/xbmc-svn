@@ -5,8 +5,8 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=29411
-pkgrel=2
+pkgver=29459
+pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
 conflicts=('xbmc' 'xbmc-pulse')
@@ -34,11 +34,11 @@ source=(
     "FEH.sh" 
     "http://trac.xbmc.org/raw-attachment/ticket/8552/projectM.diff"
 )
-md5sums=(
-    "c3e2ab79b9965f1a4a048275d5f222c4" 
-    "70eed644485de10cb80927bc1a3c77c7"
-)
 options=(makeflags)
+md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
+         '70eed644485de10cb80927bc1a3c77c7')
+sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
+            'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
 
 _svnmod=XBMC
 _prefix=/usr
@@ -63,13 +63,13 @@ build() {
     #     UCS2 unicode support, whereas xbmc expects UCS4 support
     #   - We cannot use Arch's libass because it's incompatible with XBMC's subtitle rendering
     #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
-    cd "$srcdir/$_svnmod" 
+    cd "${srcdir}/${_svnmod}"
 
     # Patch for missing projectM presets
     patch -p0 < ../../projectM.diff || return 1
 
     # Archlinux Branding by SVN_REV
-    export SVN_REV="$pkgver-ARCH"
+    export SVN_REV="${pkgver}-ARCH"
 
     # fix lsb_release dependency
     sed -i -e 's:/usr/bin/lsb_release -d:cat /etc/arch-release:' xbmc/utils/SystemInfo.cpp || return 1
@@ -89,7 +89,7 @@ build() {
 
 package() {
 
-    cd "$srcdir/$_svnmod"
+    cd "${srcdir}/${_svnmod}"
     msg "Running make install" 
     make prefix=${pkgdir}${_prefix} install || return 1
 
@@ -108,17 +108,17 @@ package() {
                    ${pkgdir}${_prefix}/bin/xbmc || return 1
 
     # .desktop files
-    install -Dm644 ${srcdir}/$_svnmod/tools/Linux/xbmc.desktop \
+    install -Dm644 ${srcdir}/${_svnmod}/tools/Linux/xbmc.desktop \
                    ${pkgdir}${_prefix}/share/applications/xbmc.desktop || return 1
 
-    install -Dm644 ${srcdir}/$_svnmod/tools/Linux/xbmc.png \
+    install -Dm644 ${srcdir}/${_svnmod}/tools/Linux/xbmc.png \
                    ${pkgdir}${_prefix}/share/pixmaps/xbmc.png || return 1
 
     # Tools
-    install -Dm755 ${srcdir}/$_svnmod/xbmc-xrandr \
+    install -Dm755 ${srcdir}/${_svnmod}/xbmc-xrandr \
                    ${pkgdir}${_prefix}/share/xbmc/xbmc-xrandr || return 1
 
-    install -Dm755 ${srcdir}/$_svnmod/tools/TexturePacker/TexturePacker \
+    install -Dm755 ${srcdir}/${_svnmod}/tools/TexturePacker/TexturePacker \
                    ${pkgdir}${_prefix}/share/xbmc/ || return 1
 
     # Licenses
