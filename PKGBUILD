@@ -1,5 +1,6 @@
 # Contributor: DonVla <donvla@users.sourceforge.net>
 # Contributors : Ralf Barth <archlinux dot org at haggy dot org>
+# Contributors : Ulf Winkelvos <ulf [at] winkelvos [dot] de>
 #
 # Original credits go to Edgar Hucek <gimli at dark-green dot com>
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
