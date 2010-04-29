@@ -1,11 +1,12 @@
 # Contributor: DonVla <donvla@users.sourceforge.net>
+# Contributor: uwinkelvos
 # Contributors : Ralf Barth <archlinux dot org at haggy dot org>
 #
 # Original credits go to Edgar Hucek <gimli at dark-green dot com>
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=29459
+pkgver=29657
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -32,16 +33,18 @@ optdepends=('lirc: remote controller support'
 install="${pkgname}.install"
 source=(
     "FEH.sh" 
+    "makefile_drop_skindir.patch"
     "http://trac.xbmc.org/raw-attachment/ticket/8552/projectM.diff"
 )
-options=(makeflags)
-md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
-         '70eed644485de10cb80927bc1a3c77c7')
-sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
-            'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
-
+options=('makeflags')
 _svnmod=XBMC
 _prefix=/usr
+md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
+         '25a4f352060b35d94aa4ead443637f4a'
+         '70eed644485de10cb80927bc1a3c77c7')
+sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
+            '840785c03bb250b8b881c782a045470822e7c0f17213fccc53b10982f4be5674'
+            'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
 
 build() {
 
@@ -66,7 +69,9 @@ build() {
     cd "${srcdir}/${_svnmod}"
 
     # Patch for missing projectM presets
-    patch -p0 < ../../projectM.diff || return 1
+    patch -p0 < ${srcdir}/projectM.diff || return 1
+    # remove skin dir check 
+    patch -p0 < ${srcdir}/makefile_drop_skindir.patch || return 1
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
@@ -81,7 +86,7 @@ build() {
                 --disable-external-python \
                 --disable-external-libass \
                 --enable-debug || return 1
-  
+
     # Now (finally) build
     msg "Running make" 
     make || return 1
