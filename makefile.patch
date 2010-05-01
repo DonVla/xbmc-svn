@@ -1,3 +1,14 @@
+--- Makefile.in.orig	2010-05-01 15:43:11.000000000 +0200
++++ Makefile.in	2010-05-01 15:45:50.000000000 +0200
+@@ -505,7 +505,7 @@
+ 
+ install-arch:
+ 	@# Arch dependent files
+-	@find system screensavers visualisations -regextype posix-extended -type f -not -iregex ".*svn.*|.*win32(dx)?\.vis|.*osx\.vis" -iregex ".*$(ARCH).*|.*\.vis|.*\.xbs" -exec install -D "{}" $(prefix)/share/xbmc/"{}" \; -printf " -- %-75.75f\r"	
++	@find system -regextype posix-extended -type f -not -iregex ".*svn.*|.*win32(dx)?\.vis|.*osx\.vis" -iregex ".*$(ARCH).*|.*\.vis|.*\.xbs" -exec install -D "{}" $(prefix)/share/xbmc/"{}" \; -printf " -- %-75.75f\r"
+ 
+ install-scripts:
+ 	@install -D tools/Linux/xbmc.sh $(prefix)/bin/xbmc
 --- Makefile.in.orig	2010-04-29 14:54:21.000000000 +0200
 +++ Makefile.in	2010-04-29 16:27:55.000000000 +0200
 @@ -521,8 +521,6 @@

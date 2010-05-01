@@ -6,7 +6,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=29657
+pkgver=29706
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -33,17 +33,17 @@ optdepends=('lirc: remote controller support'
 install="${pkgname}.install"
 source=(
     "FEH.sh" 
-    "makefile_drop_skindir.patch"
+    "makefile.patch"
     "http://trac.xbmc.org/raw-attachment/ticket/8552/projectM.diff"
 )
 options=('makeflags')
 _svnmod=XBMC
 _prefix=/usr
 md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
-         '25a4f352060b35d94aa4ead443637f4a'
+         'd2f05ebd18044ebe939c6f6f279022aa'
          '70eed644485de10cb80927bc1a3c77c7')
 sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
-            '840785c03bb250b8b881c782a045470822e7c0f17213fccc53b10982f4be5674'
+            'e3c998d3eca089196367090c44692df7f3481ab70363c19b5b1ab116727c4fdb'
             'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
 
 build() {
@@ -53,10 +53,12 @@ build() {
     cd ${srcdir}/
     if [ -d $_svnmod/.svn ]; then
         msg "SVN tree found, reverting changes and updating to -r$pkgver"
-        (cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver) || return 1
+        #(cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver) || return 1
+        (cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver)
     else
         msg "Checking out SVN tree of -r$pkgver"
-        svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod || return 1
+        #svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod || return 1
+        svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
     fi
 
     # Configure XBMC
@@ -71,7 +73,7 @@ build() {
     # Patch for missing projectM presets
     patch -p0 < ${srcdir}/projectM.diff || return 1
     # remove skin dir check 
-    patch -p0 < ${srcdir}/makefile_drop_skindir.patch || return 1
+    patch -p0 < ${srcdir}/makefile.patch || return 1
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
