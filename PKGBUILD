@@ -6,7 +6,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=29706
+pkgver=29770
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -15,7 +15,7 @@ arch=('i686' 'x86_64')
 url="http://xbmc.org"
 license=('GPL' 'LGPL')
 depends=('alsa-lib' 'curl' 'enca' 'faac' 'freetype2' 'fribidi' 'gawk' 'glew'
-         'hal' 'jasper' 'libgl' 'libjpeg>=7' 'libpng>=1.4' 'libmad' 'libmysqlclient'
+         'jasper' 'libgl' 'libjpeg>=7' 'libpng>=1.4' 'libmad' 'libmysqlclient'
          'libxinerama' 'libxrandr' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'sqlite3'
          'tre' 'unzip' 'xorg-server' 'libcdio' 'faad2' 'libsamplerate' 'smbclient' 
          'libmms' 'xorg-utils' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug'
@@ -70,10 +70,10 @@ build() {
     #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
     cd "${srcdir}/${_svnmod}"
 
-    # Patch for missing projectM presets
-    patch -p0 < ${srcdir}/projectM.diff || return 1
-    # remove skin dir check 
-    patch -p0 < ${srcdir}/makefile.patch || return 1
+    # Patch for missing projectM presets / still necessary?
+    #patch -p0 < ${srcdir}/projectM.diff || return 1
+    # remove skin dir check / already upstream
+    #patch -p0 < ${srcdir}/makefile.patch || return 1
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
