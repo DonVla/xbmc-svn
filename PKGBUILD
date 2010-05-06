@@ -7,7 +7,7 @@
 
 pkgname=xbmc-svn
 pkgver=29847
-pkgrel=1
+pkgrel=2
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
 conflicts=('xbmc' 'xbmc-pulse')
@@ -33,18 +33,12 @@ optdepends=('lirc: remote controller support'
 install="${pkgname}.install"
 source=(
     "FEH.sh" 
-    "makefile.patch"
-    "http://trac.xbmc.org/raw-attachment/ticket/8552/projectM.diff"
 )
 options=('makeflags')
 _svnmod=XBMC
 _prefix=/usr
-md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
-         'd2f05ebd18044ebe939c6f6f279022aa'
-         '70eed644485de10cb80927bc1a3c77c7')
-sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
-            'e3c998d3eca089196367090c44692df7f3481ab70363c19b5b1ab116727c4fdb'
-            'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
+md5sums=('c3e2ab79b9965f1a4a048275d5f222c4')
+sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0')
 
 build() {
 
@@ -69,11 +63,6 @@ build() {
     #   - We cannot use Arch's libass because it's incompatible with XBMC's subtitle rendering
     #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
     cd "${srcdir}/${_svnmod}"
-
-    # Patch for missing projectM presets / still necessary?
-    #patch -p0 < ${srcdir}/projectM.diff || return 1
-    # remove skin dir check / already upstream
-    #patch -p0 < ${srcdir}/makefile.patch || return 1
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
