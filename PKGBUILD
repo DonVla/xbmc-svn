@@ -6,7 +6,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=29770
+pkgver=29847
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
