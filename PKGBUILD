@@ -6,8 +6,8 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=29847
-pkgrel=2
+pkgver=30065
+pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
 conflicts=('xbmc' 'xbmc-pulse')
@@ -15,11 +15,11 @@ arch=('i686' 'x86_64')
 url="http://xbmc.org"
 license=('GPL' 'LGPL')
 depends=('alsa-lib' 'curl' 'enca' 'faac' 'freetype2' 'fribidi' 'gawk' 'glew'
-         'hal' 'jasper' 'libgl' 'libjpeg>=7' 'libpng>=1.4' 'libmad' 'libmysqlclient'
+         'jasper' 'libgl' 'libjpeg>=7' 'libpng>=1.4' 'libmad' 'libmysqlclient'
          'libxinerama' 'libxrandr' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'sqlite3'
          'tre' 'unzip' 'xorg-server' 'libcdio' 'faad2' 'libsamplerate' 'smbclient' 
          'libmms' 'xorg-utils' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug'
-         'libvdpau')
+         'libvdpau' 'udisks' 'libass')
 makedepends=('subversion' 'autoconf' 'automake' 'boost' 'cmake' 'gcc' 'gperf' 
              'libtool>=2.2.6a-1' 'make' 'nasm' 'patch' 'pkgconfig' 'zip' 'flex' 
              'bison' 'cvs')
@@ -33,12 +33,15 @@ optdepends=('lirc: remote controller support'
 install="${pkgname}.install"
 source=(
     "FEH.sh" 
+    "http://trac.xbmc.org/raw-attachment/ticket/8552/projectM.diff"
 )
 options=('makeflags')
 _svnmod=XBMC
 _prefix=/usr
-md5sums=('c3e2ab79b9965f1a4a048275d5f222c4')
-sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0')
+md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
+         '70eed644485de10cb80927bc1a3c77c7')
+sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
+            'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
 
 build() {
 
@@ -60,9 +63,11 @@ build() {
     # Note on external-libs:
     #   - We cannot use external python because Arch's python was built with
     #     UCS2 unicode support, whereas xbmc expects UCS4 support
-    #   - We cannot use Arch's libass because it's incompatible with XBMC's subtitle rendering
     #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
     cd "${srcdir}/${_svnmod}"
+
+    # Patch for missing projectM presets
+    #patch -p0 < ${srcdir}/projectM.diff || return 1
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
@@ -73,9 +78,11 @@ build() {
     msg "Configuring XBMC" 
     ./bootstrap || return 1
     ./configure --prefix=${_prefix} \
+		--enable-external-libraries \
+                --enable-external-libass \
                 --disable-external-ffmpeg \
                 --disable-external-python \
-                --disable-external-libass \
+		--disable-hal \
                 --enable-debug || return 1
 
     # Now (finally) build
@@ -119,9 +126,16 @@ package() {
 
     # Licenses
     install -dm755 ${pkgdir}${_prefix}/share/licenses/${pkgname}
-    for licensef in LICENSE.GPL README.linux copying.txt; do
-        mv ${pkgdir}${_prefix}/share/xbmc/${licensef} \
+    for licensef in LICENSE.GPL copying.txt; do
+        mv ${pkgdir}${_prefix}/share/doc/${licensef} \
            ${pkgdir}${_prefix}/share/licenses/${pkgname} || return 1
+    done
+
+    # Docs
+    install -dm755 ${pkgdir}${_prefix}/share/doc/${pkgname}
+    for docsf in keymapping.txt README.linux; do
+        mv ${pkgdir}${_prefix}/share/doc/${docsf} \
+           ${pkgdir}${_prefix}/share/doc/${pkgname} || return 1
     done
 
     # strip
