@@ -6,7 +6,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=29706
+pkgver=30254
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -33,17 +33,14 @@ optdepends=('lirc: remote controller support'
 install="${pkgname}.install"
 source=(
     "FEH.sh" 
-    "makefile.patch"
     "http://trac.xbmc.org/raw-attachment/ticket/8552/projectM.diff"
 )
 options=('makeflags')
 _svnmod=XBMC
 _prefix=/usr
 md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
-         'd2f05ebd18044ebe939c6f6f279022aa'
          '70eed644485de10cb80927bc1a3c77c7')
 sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
-            'e3c998d3eca089196367090c44692df7f3481ab70363c19b5b1ab116727c4fdb'
             'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
 
 build() {
@@ -53,12 +50,12 @@ build() {
     cd ${srcdir}/
     if [ -d $_svnmod/.svn ]; then
         msg "SVN tree found, reverting changes and updating to -r$pkgver"
-        #(cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver) || return 1
-        (cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver)
+        (cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver) || return 1
+        #(cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver)
     else
         msg "Checking out SVN tree of -r$pkgver"
-        #svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod || return 1
-        svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
+        svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod || return 1
+        #svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
     fi
 
     # Configure XBMC
@@ -72,8 +69,6 @@ build() {
 
     # Patch for missing projectM presets
     patch -p0 < ${srcdir}/projectM.diff || return 1
-    # remove skin dir check 
-    patch -p0 < ${srcdir}/makefile.patch || return 1
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
@@ -131,7 +126,7 @@ package() {
     # Licenses
     install -dm755 ${pkgdir}${_prefix}/share/licenses/${pkgname}
     for licensef in LICENSE.GPL README.linux copying.txt; do
-        mv ${pkgdir}${_prefix}/share/xbmc/${licensef} \
+        mv ${pkgdir}${_prefix}/share/doc/${licensef} \
            ${pkgdir}${_prefix}/share/licenses/${pkgname} || return 1
     done
 
