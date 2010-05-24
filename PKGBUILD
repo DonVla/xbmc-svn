@@ -6,7 +6,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=30065
+pkgver=30254
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -50,12 +50,12 @@ build() {
     cd ${srcdir}/
     if [ -d $_svnmod/.svn ]; then
         msg "SVN tree found, reverting changes and updating to -r$pkgver"
-        #(cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver) || return 1
-        (cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver)
+        (cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver) || return 1
+        #(cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver)
     else
         msg "Checking out SVN tree of -r$pkgver"
-        #svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod || return 1
-        svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
+        svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod || return 1
+        #svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
     fi
 
     # Configure XBMC
@@ -67,7 +67,7 @@ build() {
     cd "${srcdir}/${_svnmod}"
 
     # Patch for missing projectM presets
-    #patch -p0 < ${srcdir}/projectM.diff || return 1
+    patch -p0 < ${srcdir}/projectM.diff || return 1
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
