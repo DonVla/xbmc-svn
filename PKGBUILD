@@ -1,4 +1,4 @@
-# Contributor: DonVla <donvla@users.sourceforge.net>
+# Maintainer: DonVla <donvla@users.sourceforge.net>
 # Contributor: Ulf Winkelvos <ulf [at] winkelvos [dot] de>
 # Contributor: Ralf Barth <archlinux dot org at haggy dot org>
 #
@@ -6,7 +6,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=30254
+pkgver=30605
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -19,7 +19,7 @@ depends=('alsa-lib' 'curl' 'enca' 'faac' 'freetype2' 'fribidi' 'gawk' 'glew'
          'libxinerama' 'libxrandr' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'sqlite3'
          'tre' 'unzip' 'xorg-server' 'libcdio' 'faad2' 'libsamplerate' 'smbclient' 
          'libmms' 'xorg-utils' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug'
-         'libvdpau' 'udisks' 'libass')
+         'libvdpau' 'udisks')
 makedepends=('subversion' 'autoconf' 'automake' 'boost' 'cmake' 'gcc' 'gperf' 
              'libtool>=2.2.6a-1' 'make' 'nasm' 'patch' 'pkgconfig' 'zip' 'flex' 
              'bison' 'cvs')
@@ -30,18 +30,17 @@ optdepends=('lirc: remote controller support'
             'upower: used to trigger suspend functionality'
             'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
             'libssh: support for sshfs')
-install="${pkgname}.install"
-source=(
-    "FEH.sh" 
-    "http://trac.xbmc.org/raw-attachment/ticket/8552/projectM.diff"
-)
 options=('makeflags')
-_svnmod=XBMC
-_prefix=/usr
+install="${pkgname}.install"
+source=("FEH.sh" 
+        "projectM.diff" )
 md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
          '70eed644485de10cb80927bc1a3c77c7')
 sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
             'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
+
+_svnmod=XBMC
+_prefix=/usr
 
 build() {
 
@@ -78,11 +77,10 @@ build() {
     msg "Configuring XBMC" 
     ./bootstrap || return 1
     ./configure --prefix=${_prefix} \
-		--enable-external-libraries \
-                --enable-external-libass \
+                --disable-hal \
                 --disable-external-ffmpeg \
                 --disable-external-python \
-		--disable-hal \
+                --disable-external-libass \
                 --enable-debug || return 1
 
     # Now (finally) build
