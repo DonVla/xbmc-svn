@@ -30,7 +30,7 @@ optdepends=('lirc: remote controller support'
             'upower: used to trigger suspend functionality'
             'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
             'libssh: support for sshfs')
-options=('makeflags')
+options=()
 install="${pkgname}.install"
 source=("FEH.sh" 
         "projectM.diff" )
@@ -62,6 +62,7 @@ build() {
     # Note on external-libs:
     #   - We cannot use external python because Arch's python was built with
     #     UCS2 unicode support, whereas xbmc expects UCS4 support
+    #   - We cannot use Arch's libass because it's incompatible with XBMC's subtitle rendering
     #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
     cd "${srcdir}/${_svnmod}"
 
