@@ -92,7 +92,7 @@ build() {
                 --disable-external-ffmpeg \
                 --disable-external-python \
                 --disable-external-libass \
-                --disable-debug || return 1
+                --enable-debug || return 1
 
     # Now (finally) build
     msg "Running make" 
