@@ -92,9 +92,6 @@ build() {
                 --disable-external-ffmpeg \
                 --disable-external-python \
                 --disable-external-libass \
-                --disable-pulse \
-                --disable-avahi \
-                --disable-webserver \
                 --disable-debug || return 1
 
     # Now (finally) build
