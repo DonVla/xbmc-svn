@@ -1,5 +1,8 @@
 # Maintainer: DonVla <donvla@users.sourceforge.net>
+<<<<<<< HEAD
 # Contributor: BlackEagle < ike DOT devolder AT herecura DOT be >
+=======
+>>>>>>> 574000342bfa0d530e365fcf50f5246714c9768f
 # Contributor: Ulf Winkelvos <ulf [at] winkelvos [dot] de>
 # Contributor: Ralf Barth <archlinux dot org at haggy dot org>
 #
@@ -7,7 +10,11 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
+<<<<<<< HEAD
 pkgver=30746
+=======
+pkgver=30605
+>>>>>>> 574000342bfa0d530e365fcf50f5246714c9768f
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -88,7 +95,10 @@ build() {
                # --enable-ccache \
     ./configure --prefix=${_prefix} \
                 --disable-hal \
+<<<<<<< HEAD
                 --enable-external-libraries \
+=======
+>>>>>>> 574000342bfa0d530e365fcf50f5246714c9768f
                 --disable-external-ffmpeg \
                 --disable-external-python \
                 --disable-external-libass \
@@ -131,7 +141,12 @@ package() {
     # Licenses
     install -d -m 0755 ${pkgdir}${_prefix}/share/licenses/${pkgname}
     for licensef in LICENSE.GPL README.linux copying.txt; do
+<<<<<<< HEAD
         install -m 0644 ${pkgdir}${_prefix}/share/doc/${licensef} ${pkgdir}${_prefix}/share/licenses/${pkgname} || return 1
+=======
+        mv ${pkgdir}${_prefix}/share/doc/${licensef} \
+           ${pkgdir}${_prefix}/share/licenses/${pkgname} || return 1
+>>>>>>> 574000342bfa0d530e365fcf50f5246714c9768f
     done
 	
 	# cleanup some stuff
