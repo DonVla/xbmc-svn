@@ -1,4 +1,5 @@
 # Maintainer: DonVla <donvla@users.sourceforge.net>
+# Contributor: BlackEagle < ike DOT devolder AT herecura DOT be >
 # Contributor: Ulf Winkelvos <ulf [at] winkelvos [dot] de>
 # Contributor: Ralf Barth <archlinux dot org at haggy dot org>
 #
@@ -6,7 +7,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=30605
+pkgver=30746
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -19,7 +20,7 @@ depends=('alsa-lib' 'curl' 'enca' 'faac' 'freetype2' 'fribidi' 'gawk' 'glew'
          'libxinerama' 'libxrandr' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'sqlite3'
          'tre' 'unzip' 'xorg-server' 'libcdio' 'faad2' 'libsamplerate' 'smbclient' 
          'libmms' 'xorg-utils' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug'
-         'libvdpau' 'udisks')
+         'libvdpau')
 makedepends=('subversion' 'autoconf' 'automake' 'boost' 'cmake' 'gcc' 'gperf' 
              'libtool>=2.2.6a-1' 'make' 'nasm' 'patch' 'pkgconfig' 'zip' 'flex' 
              'bison' 'cvs')
@@ -28,6 +29,7 @@ optdepends=('lirc: remote controller support'
             'avahi: to use zerconf features (remote, etc...)'
             'unrar: access compressed files without unpacking them'
             'upower: used to trigger suspend functionality'
+            'udisks: automount external drives'
             'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
             'libssh: support for sshfs')
 options=()
@@ -72,17 +74,25 @@ build() {
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
 
-    # fix lsb_release dependency
+    # fix lsb_release dependency: IS THIS NEEDED???
     sed -i -e 's:/usr/bin/lsb_release -d:cat /etc/arch-release:' xbmc/utils/SystemInfo.cpp || return 1
 
+	msg "Bootstrapping XBMC"
+	./bootstrap || return 1
+
     msg "Configuring XBMC" 
-    ./bootstrap || return 1
+    # some options - disable or enable stuff - copy them under ./configure
+               # --disable-pulse \
+               # --disable-avahi \
+               # --disable-webserver \
+               # --enable-ccache \
     ./configure --prefix=${_prefix} \
                 --disable-hal \
+                --enable-external-libraries \
                 --disable-external-ffmpeg \
                 --disable-external-python \
                 --disable-external-libass \
-                --enable-debug || return 1
+                --disable-debug || return 1
 
     # Now (finally) build
     msg "Running make" 
@@ -96,32 +106,24 @@ package() {
     make prefix=${pkgdir}${_prefix} install || return 1
 
     # Replace FEH.py with FEH.sh (and thus remove external python dependency)
-    install -Dm755 ${srcdir}/FEH.sh \
-                   ${pkgdir}${_prefix}/share/xbmc/FEH.sh || return 1
+    install -D -m 0755 ${srcdir}/FEH.sh ${pkgdir}${_prefix}/share/xbmc/FEH.sh || return 1
 
-    sed -i -e "s/python \\${_prefix}\/share\/xbmc\/FEH.py \"\$@\"/\\${_prefix}\/share\/xbmc\/FEH.sh/g" \
-                   ${pkgdir}${_prefix}/bin/xbmc || return 1
+    sed -i -e "s/python \\${_prefix}\/share\/xbmc\/FEH.py \"\$@\"/\\${_prefix}\/share\/xbmc\/FEH.sh/g" ${pkgdir}${_prefix}/bin/xbmc || return 1
 
     # lsb_release fix
-    sed -i -e 's/which lsb_release &> \/dev\/null/\[ -f \/etc\/arch-release ]/g' \
-                   ${pkgdir}${_prefix}/bin/xbmc || return 1
+    sed -i -e 's/which lsb_release &> \/dev\/null/\[ -f \/etc\/arch-release ]/g' ${pkgdir}${_prefix}/bin/xbmc || return 1
 
-    sed -i -e "s/lsb_release -a 2> \/dev\/null | sed -e 's\/\^\/    \/'/cat \/etc\/arch-release/g" \
-                   ${pkgdir}${_prefix}/bin/xbmc || return 1
+    sed -i -e "s/lsb_release -a 2> \/dev\/null | sed -e 's\/\^\/    \/'/cat \/etc\/arch-release/g" ${pkgdir}${_prefix}/bin/xbmc || return 1
 
     # .desktop files
-    install -Dm644 ${srcdir}/${_svnmod}/tools/Linux/xbmc.desktop \
-                   ${pkgdir}${_prefix}/share/applications/xbmc.desktop || return 1
+    install -D -m 0644 ${srcdir}/${_svnmod}/tools/Linux/xbmc.desktop ${pkgdir}${_prefix}/share/applications/xbmc.desktop || return 1
 
-    install -Dm644 ${srcdir}/${_svnmod}/tools/Linux/xbmc.png \
-                   ${pkgdir}${_prefix}/share/pixmaps/xbmc.png || return 1
+    install -D -m 0644 ${srcdir}/${_svnmod}/tools/Linux/xbmc.png ${pkgdir}${_prefix}/share/pixmaps/xbmc.png || return 1
 
     # Tools
-    install -Dm755 ${srcdir}/${_svnmod}/xbmc-xrandr \
-                   ${pkgdir}${_prefix}/share/xbmc/xbmc-xrandr || return 1
+    install -D -m 0755 ${srcdir}/${_svnmod}/xbmc-xrandr ${pkgdir}${_prefix}/share/xbmc/xbmc-xrandr || return 1
 
-    install -Dm755 ${srcdir}/${_svnmod}/tools/TexturePacker/TexturePacker \
-                   ${pkgdir}${_prefix}/share/xbmc/ || return 1
+    install -D -m 0755 ${srcdir}/${_svnmod}/tools/TexturePacker/TexturePacker ${pkgdir}${_prefix}/share/xbmc/ || return 1
 
     # Licenses
     install -dm755 ${pkgdir}${_prefix}/share/licenses/${pkgname}
@@ -136,7 +138,13 @@ package() {
         mv ${pkgdir}${_prefix}/share/doc/${docsf} \
            ${pkgdir}${_prefix}/share/doc/${pkgname} || return 1
     done
+	
+	# cleanup some stuff
+	msg "Cleanup unneeded files"
+	rm -rf ${pkgdir}/usr/share/xsessions
+	rm -f ${pkgdir}/usr/share/xbmc/FEH.py
 
     # strip
+	msg "Stripping binaries"
     find $pkgdir -type f -exec strip {} \; >/dev/null 2>/dev/null
 }
