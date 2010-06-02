@@ -15,10 +15,10 @@ conflicts=('xbmc' 'xbmc-pulse')
 arch=('i686' 'x86_64')
 url="http://xbmc.svn.sourceforge.net/viewvc/xbmc/trunk"
 license=('GPL' 'LGPL')
-depends=('curl' 'enca' 'faac' 'fribidi' 'gawk' 'glew' 'jasper' 'libgl' 'libmad' 'libmysqlclient' 
-         'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'tre' 'unzip' 'libcdio' 'faad2' 'libsamplerate' 
-         'smbclient' 'libmms' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug' 'libvdpau' 'libass')
-makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs' 'libvdpau')
+depends=('curl' 'enca' 'faac' 'fribidi' 'gawk' 'glew' 'jasper' 'libgl' 'libmad' 'libmysqlclient'
+         'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'tre' 'unzip' 'libcdio' 'faad2' 'libsamplerate'
+         'smbclient' 'libmms' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug' 'libass')
+makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs')
 optdepends=('lirc: remote controller support'
             'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED'
             'avahi: to use zerconf features (remote, etc...)'
