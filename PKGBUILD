@@ -31,6 +31,7 @@ optdepends=('lirc: remote controller support'
             'udisks: automount external drives'
             'libvdpau: accelerated video playback for nvidia cards'
             'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
+            'pulseaudio: for pulse audi support'
             'libssh: support for sshfs')
 options=()
 install="${pkgname}.install"
