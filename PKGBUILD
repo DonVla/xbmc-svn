@@ -8,28 +8,28 @@
 
 pkgname=xbmc-svn
 pkgver=30746
-pkgrel=1
+pkgrel=5
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
 conflicts=('xbmc' 'xbmc-pulse')
 arch=('i686' 'x86_64')
 url="http://xbmc.org"
 license=('GPL' 'LGPL')
-depends=('alsa-lib' 'curl' 'enca' 'faac' 'freetype2' 'fribidi' 'gawk' 'glew'
-         'jasper' 'libgl' 'libjpeg>=7' 'libpng>=1.4' 'libmad' 'libmysqlclient'
-         'libxinerama' 'libxrandr' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'sqlite3'
-         'tre' 'unzip' 'xorg-server' 'libcdio' 'faad2' 'libsamplerate' 'smbclient' 
-         'libmms' 'xorg-utils' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug'
-         'libvdpau')
-makedepends=('subversion' 'autoconf' 'automake' 'boost' 'cmake' 'gcc' 'gperf' 
-             'libtool>=2.2.6a-1' 'make' 'nasm' 'patch' 'pkgconfig' 'zip' 'flex' 
-             'bison' 'cvs')
+depends=( 'bzip2' 'curl' 'enca' 'faac' 'faad2' 'fontconfig' 'fribidi'
+          'glew' 'jasper' 'libcdio' 'libgl' 'libmad' 'libmms'
+          'libmpeg2' 'libmysqlclient' 'libsamplerate' 'libxinerama'
+          'libxrandr' 'libxtst' 'lzo2' 'sdl_image' 'sdl_mixer'
+          'smbclient' 'wavpack' 'libass')
+#projectM warns about not having ftgl, but namcap does not show any dep
+# 'ftgl')
+makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs' 'libvdpau')
 optdepends=('lirc: remote controller support'
             'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED'
             'avahi: to use zerconf features (remote, etc...)'
             'unrar: access compressed files without unpacking them'
             'upower: used to trigger suspend functionality'
             'udisks: automount external drives'
+            'libvdpau: accelerated video playback for nvidia cards'
             'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
             'libssh: support for sshfs')
 options=()
@@ -64,12 +64,17 @@ build() {
     # Note on external-libs:
     #   - We cannot use external python because Arch's python was built with
     #     UCS2 unicode support, whereas xbmc expects UCS4 support
-    #   - We cannot use Arch's libass because it's incompatible with XBMC's subtitle rendering
     #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
     cd "${srcdir}/${_svnmod}"
 
     # Patch for missing projectM presets
-    patch -p0 < ${srcdir}/projectM.diff || return 1
+    # projectM simply stays broken
+    #patch -p0 < ${srcdir}/projectM.diff || return 1
+
+    #do not apply!!! for testing purposes only!!! hack vdpau initialization to make vdpau with tvheadend work
+    #msg "vdpau hack enabled"
+    #patch -p0 -i $startdir/vdpau-hack.patch
+    #sleep 5
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
@@ -77,8 +82,8 @@ build() {
     # fix lsb_release dependency: IS THIS NEEDED???
     sed -i -e 's:/usr/bin/lsb_release -d:cat /etc/arch-release:' xbmc/utils/SystemInfo.cpp || return 1
 
-	msg "Bootstrapping XBMC"
-	./bootstrap || return 1
+    msg "Bootstrapping XBMC"
+    ./bootstrap || return 1
 
     msg "Configuring XBMC" 
     # some options - disable or enable stuff - copy them under ./configure
@@ -89,10 +94,10 @@ build() {
     ./configure --prefix=${_prefix} \
                 --disable-hal \
                 --enable-external-libraries \
+                --enable-external-libass \
                 --disable-external-ffmpeg \
                 --disable-external-python \
-                --disable-external-libass \
-                --disable-debug || return 1
+                --enable-debug || return 1
 
     # Now (finally) build
     msg "Running make" 
@@ -108,7 +113,9 @@ package() {
     # Replace FEH.py with FEH.sh (and thus remove external python dependency)
     install -D -m 0755 ${srcdir}/FEH.sh ${pkgdir}${_prefix}/share/xbmc/FEH.sh || return 1
 
-    sed -i -e "s/python \\${_prefix}\/share\/xbmc\/FEH.py \"\$@\"/\\${_prefix}\/share\/xbmc\/FEH.sh/g" ${pkgdir}${_prefix}/bin/xbmc || return 1
+    # has this ever worked? second line does.
+    #sed -i -e "s/python \\${_prefix}\/share\/xbmc\/FEH.py \"\$@\"/\\${_prefix}\/share\/xbmc\/FEH.sh/g" ${pkgdir}${_prefix}/bin/xbmc || return 1
+    sed -i -e 's/^python \(.*\)FEH.py \(.*\)$/\1FEH.sh \2/' ${pkgdir}${_prefix}/bin/xbmc || return 1
 
     # lsb_release fix
     sed -i -e 's/which lsb_release &> \/dev\/null/\[ -f \/etc\/arch-release ]/g' ${pkgdir}${_prefix}/bin/xbmc || return 1
