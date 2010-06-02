@@ -7,21 +7,18 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=30746
-pkgrel=5
+pkgver=30761
+pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
 conflicts=('xbmc' 'xbmc-pulse')
 arch=('i686' 'x86_64')
-url="http://xbmc.org"
+url="http://xbmc.svn.sourceforge.net/viewvc/xbmc/trunk"
 license=('GPL' 'LGPL')
-depends=( 'bzip2' 'curl' 'enca' 'faac' 'faad2' 'fontconfig' 'fribidi'
-          'glew' 'jasper' 'libcdio' 'libgl' 'libmad' 'libmms'
-          'libmpeg2' 'libmysqlclient' 'libsamplerate' 'libxinerama'
-          'libxrandr' 'libxtst' 'lzo2' 'sdl_image' 'sdl_mixer'
-          'smbclient' 'wavpack' 'libass')
-#projectM warns about not having ftgl, but namcap does not show any dep
-# 'ftgl')
+depends=('curl' 'enca' 'faac' 'fribidi' 'glew' 'jasper' 'libgl' 'libmad' 'libmysqlclient'
+         'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'libcdio' 'faad2' 'libsamplerate'
+         'smbclient' 'libmms' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug' 'libass'
+         'bzip2''fontconfig' 'libxinerama''libxrandr' 'libxtst')
 makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs' 'libvdpau')
 optdepends=('lirc: remote controller support'
             'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED'
@@ -31,16 +28,13 @@ optdepends=('lirc: remote controller support'
             'udisks: automount external drives'
             'libvdpau: accelerated video playback for nvidia cards'
             'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
-            'pulseaudio: for pulse audi support'
+            'pulseaudio: for pulseaudio support'
             'libssh: support for sshfs')
 options=()
 install="${pkgname}.install"
-source=("FEH.sh" 
-        "projectM.diff" )
-md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
-         '70eed644485de10cb80927bc1a3c77c7')
-sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
-            'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
+source=("FEH.sh") 
+md5sums=('c3e2ab79b9965f1a4a048275d5f222c4')
+sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0')
 
 _svnmod=XBMC
 _prefix=/usr
@@ -53,11 +47,9 @@ build() {
     if [ -d $_svnmod/.svn ]; then
         msg "SVN tree found, reverting changes and updating to -r$pkgver"
         (cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver) || return 1
-        #(cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver)
     else
         msg "Checking out SVN tree of -r$pkgver"
         svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod || return 1
-        #svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
     fi
 
     # Configure XBMC
@@ -67,15 +59,6 @@ build() {
     #     UCS2 unicode support, whereas xbmc expects UCS4 support
     #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
     cd "${srcdir}/${_svnmod}"
-
-    # Patch for missing projectM presets
-    # projectM simply stays broken
-    #patch -p0 < ${srcdir}/projectM.diff || return 1
-
-    #do not apply!!! for testing purposes only!!! hack vdpau initialization to make vdpau with tvheadend work
-    #msg "vdpau hack enabled"
-    #patch -p0 -i $startdir/vdpau-hack.patch
-    #sleep 5
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
@@ -114,7 +97,6 @@ package() {
     # Replace FEH.py with FEH.sh (and thus remove external python dependency)
     install -D -m 0755 ${srcdir}/FEH.sh ${pkgdir}${_prefix}/share/xbmc/FEH.sh || return 1
 
-    # has this ever worked? second line does.
     #sed -i -e "s/python \\${_prefix}\/share\/xbmc\/FEH.py \"\$@\"/\\${_prefix}\/share\/xbmc\/FEH.sh/g" ${pkgdir}${_prefix}/bin/xbmc || return 1
     sed -i -e 's/^python \(.*\)FEH.py \(.*\)$/\1FEH.sh \2/' ${pkgdir}${_prefix}/bin/xbmc || return 1
 
@@ -134,23 +116,21 @@ package() {
     install -D -m 0755 ${srcdir}/${_svnmod}/tools/TexturePacker/TexturePacker ${pkgdir}${_prefix}/share/xbmc/ || return 1
 
     # Licenses
-    install -dm755 ${pkgdir}${_prefix}/share/licenses/${pkgname}
-    for licensef in LICENSE.GPL copying.txt; do
-        mv ${pkgdir}${_prefix}/share/doc/${licensef} \
-           ${pkgdir}${_prefix}/share/licenses/${pkgname} || return 1
-    done
-
-    # Docs
-    install -dm755 ${pkgdir}${_prefix}/share/doc/${pkgname}
-    for docsf in keymapping.txt README.linux; do
-        mv ${pkgdir}${_prefix}/share/doc/${docsf} \
-           ${pkgdir}${_prefix}/share/doc/${pkgname} || return 1
+    install -d -m 0755 ${pkgdir}${_prefix}/share/licenses/${pkgname} 
+    for licensef in LICENSE.GPL copying.txt; do 
+        mv ${pkgdir}${_prefix}/share/doc/${licensef} ${pkgdir}${_prefix}/share/licenses/${pkgname} || return 1 
+    done 
+ 
+    # Docs 
+    install -d -m 0755 ${pkgdir}${_prefix}/share/doc/${pkgname} 
+    for docsf in keymapping.txt README.linux; do 
+        mv ${pkgdir}${_prefix}/share/doc/${docsf} ${pkgdir}${_prefix}/share/doc/${pkgname} || return 1 
     done
 	
-	# cleanup some stuff
-	msg "Cleanup unneeded files"
-	rm -rf ${pkgdir}/usr/share/xsessions
-	rm -f ${pkgdir}/usr/share/xbmc/FEH.py
+    # cleanup some stuff
+    msg "Cleanup unneeded files"
+    rm -rf ${pkgdir}/usr/share/xsessions
+    rm -f ${pkgdir}/usr/share/xbmc/FEH.py
 
     # strip
 	msg "Stripping binaries"
