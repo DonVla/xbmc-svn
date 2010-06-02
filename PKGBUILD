@@ -65,8 +65,8 @@ build() {
     # fix lsb_release dependency: IS THIS NEEDED???
     sed -i -e 's:/usr/bin/lsb_release -d:cat /etc/arch-release:' xbmc/utils/SystemInfo.cpp || return 1
 
-	msg "Bootstrapping XBMC"
-	./bootstrap || return 1
+    msg "Bootstrapping XBMC"
+    ./bootstrap || return 1
 
     msg "Configuring XBMC" 
     # some options - disable or enable stuff - copy them under ./configure
@@ -96,7 +96,8 @@ package() {
     # Replace FEH.py with FEH.sh (and thus remove external python dependency)
     install -D -m 0755 ${srcdir}/FEH.sh ${pkgdir}${_prefix}/share/xbmc/FEH.sh || return 1
 
-    sed -i -e "s/python \\${_prefix}\/share\/xbmc\/FEH.py \"\$@\"/\\${_prefix}\/share\/xbmc\/FEH.sh/g" ${pkgdir}${_prefix}/bin/xbmc || return 1
+    #sed -i -e "s/python \\${_prefix}\/share\/xbmc\/FEH.py \"\$@\"/\\${_prefix}\/share\/xbmc\/FEH.sh/g" ${pkgdir}${_prefix}/bin/xbmc || return 1
+    sed -i -e 's/^python \(.*\)FEH.py \(.*\)$/\1FEH.sh \2/' ${pkgdir}${_prefix}/bin/xbmc || return 1
 
     # lsb_release fix
     sed -i -e 's/which lsb_release &> \/dev\/null/\[ -f \/etc\/arch-release ]/g' ${pkgdir}${_prefix}/bin/xbmc || return 1
@@ -114,10 +115,16 @@ package() {
     install -D -m 0755 ${srcdir}/${_svnmod}/tools/TexturePacker/TexturePacker ${pkgdir}${_prefix}/share/xbmc/ || return 1
 
     # Licenses
-    install -d -m 0755 ${pkgdir}${_prefix}/share/licenses/${pkgname}
-    for licensef in LICENSE.GPL README.linux copying.txt; do
-        install -m 0644 ${pkgdir}${_prefix}/share/doc/${licensef} ${pkgdir}${_prefix}/share/licenses/${pkgname} || return 1
-    done
+    install -d -m 0755 ${pkgdir}${_prefix}/share/licenses/${pkgname} 
+    for licensef in LICENSE.GPL copying.txt; do 
+        mv ${pkgdir}${_prefix}/share/doc/${licensef} ${pkgdir}${_prefix}/share/licenses/${pkgname} || return 1 
+    done 
+ 
+    # Docs 
+    install -d -m 0755 ${pkgdir}${_prefix}/share/doc/${pkgname} 
+    for docsf in keymapping.txt README.linux; do 
+        mv ${pkgdir}${_prefix}/share/doc/${docsf} ${pkgdir}${_prefix}/share/doc/${pkgname} || return 1 
+     done
 	
 	# cleanup some stuff
 	msg "Cleanup unneeded files"
