@@ -7,39 +7,32 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=30746
+pkgver=30761
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
 conflicts=('xbmc' 'xbmc-pulse')
 arch=('i686' 'x86_64')
-url="http://xbmc.org"
+url="http://xbmc.svn.sourceforge.net/viewvc/xbmc/trunk"
 license=('GPL' 'LGPL')
-depends=('alsa-lib' 'curl' 'enca' 'faac' 'freetype2' 'fribidi' 'gawk' 'glew'
-         'jasper' 'libgl' 'libjpeg>=7' 'libpng>=1.4' 'libmad' 'libmysqlclient'
-         'libxinerama' 'libxrandr' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'sqlite3'
-         'tre' 'unzip' 'xorg-server' 'libcdio' 'faad2' 'libsamplerate' 'smbclient' 
-         'libmms' 'xorg-utils' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug'
-         'libvdpau')
-makedepends=('subversion' 'autoconf' 'automake' 'boost' 'cmake' 'gcc' 'gperf' 
-             'libtool>=2.2.6a-1' 'make' 'nasm' 'patch' 'pkgconfig' 'zip' 'flex' 
-             'bison' 'cvs')
-optdepends=('lirc: remote controller support'
-            'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED'
-            'avahi: to use zerconf features (remote, etc...)'
-            'unrar: access compressed files without unpacking them'
-            'upower: used to trigger suspend functionality'
-            'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
+depends=('curl' 'enca' 'faac' 'fribidi' 'gawk' 'glew' 'jasper' 'libgl' 'libmad' 'libmysqlclient' 
+         'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'tre' 'unzip' 'libcdio' 'faad2' 'libsamplerate' 
+         'smbclient' 'libmms' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug' 'libvdpau')
+makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs' 'libvdpau')
+optdepends=('lirc: remote controller support' 
+            'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED' 
+            'avahi: to use zerconf features (remote, etc...)' 
+            'unrar: access compressed files without unpacking them' 
+            'upower: used to trigger suspend functionality' 
+            'udisks: automount external drives' 
+            'libvdpau: accelerated video playback for nvidia cards' 
+            'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards' 
             'libssh: support for sshfs')
 options=('makeflags')
 install="${pkgname}.install"
-source=("FEH.sh" 
-        #"http://trac.xbmc.org/raw-attachment/ticket/8552/projectM.diff"
-        "projectM.diff" )
-md5sums=('c3e2ab79b9965f1a4a048275d5f222c4'
-         '70eed644485de10cb80927bc1a3c77c7')
-sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0'
-            'c379ba3b2b74e825025bf3138b9f2406aa61650868715a8dfc9ff12c3333c2b6')
+source=("FEH.sh") 
+md5sums=('c3e2ab79b9965f1a4a048275d5f222c4')
+sha256sums=('1b391dfbaa07f81e5a5a7dfd1288bf2bdeab8dc50bbb6dbf39a80d8797dfaeb0')
 
 _svnmod=XBMC
 _prefix=/usr
@@ -52,11 +45,9 @@ build() {
     if [ -d $_svnmod/.svn ]; then
         msg "SVN tree found, reverting changes and updating to -r$pkgver"
         (cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver) || return 1
-        #(cd $_svnmod && svn revert -R . && make distclean; svn up -r $pkgver)
     else
         msg "Checking out SVN tree of -r$pkgver"
         svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod || return 1
-        #svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
     fi
 
     # Configure XBMC
@@ -67,9 +58,6 @@ build() {
     #   - We cannot use Arch's libass because it's incompatible with XBMC's subtitle rendering
     #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
     cd "${srcdir}/${_svnmod}"
-
-    # Patch for missing projectM presets
-    patch -p0 < ${srcdir}/projectM.diff || return 1
 
     # Archlinux Branding by SVN_REV
     export SVN_REV="${pkgver}-ARCH"
@@ -88,11 +76,15 @@ build() {
                # --enable-ccache \
     ./configure --prefix=${_prefix} \
                 --disable-hal \
+                --disable-pulse \
+                --disable-avahi \
+                --disable-webserver \
+                --enable-ccache \
                 --enable-external-libraries \
                 --disable-external-ffmpeg \
                 --disable-external-python \
                 --disable-external-libass \
-                --enable-debug || return 1
+                --disable-debug || return 1
 
     # Now (finally) build
     msg "Running make" 
