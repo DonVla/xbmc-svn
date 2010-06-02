@@ -76,15 +76,11 @@ build() {
                # --enable-ccache \
     ./configure --prefix=${_prefix} \
                 --disable-hal \
-                --disable-pulse \
-                --disable-avahi \
-                --disable-webserver \
-                --enable-ccache \
                 --enable-external-libraries \
                 --disable-external-ffmpeg \
                 --disable-external-python \
                 --disable-external-libass \
-                --disable-debug || return 1
+                --enable-debug || return 1
 
     # Now (finally) build
     msg "Running make" 
