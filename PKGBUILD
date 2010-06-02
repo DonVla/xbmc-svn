@@ -19,7 +19,7 @@ depends=('curl' 'enca' 'faac' 'fribidi' 'glew' 'jasper' 'libgl' 'libmad' 'libmys
          'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'libcdio' 'faad2' 'libsamplerate'
          'smbclient' 'libmms' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug' 'libass'
          'bzip2' 'fontconfig' 'libxinerama' 'libxrandr' 'libxtst')
-makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs' 'libvdpau')
+makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs')
 optdepends=('lirc: remote controller support'
             'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED'
             'avahi: to use zerconf features (remote, etc...)'
