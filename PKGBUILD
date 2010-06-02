@@ -26,7 +26,8 @@ optdepends=('lirc: remote controller support'
             'upower: used to trigger suspend functionality' 
             'udisks: automount external drives' 
             'libvdpau: accelerated video playback for nvidia cards' 
-            'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards' 
+            'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
+            'pulseaudio: pulseaudio support'
             'libssh: support for sshfs')
 options=('makeflags')
 install="${pkgname}.install"
@@ -55,7 +56,6 @@ build() {
     # Note on external-libs:
     #   - We cannot use external python because Arch's python was built with
     #     UCS2 unicode support, whereas xbmc expects UCS4 support
-    #   - We cannot use Arch's libass because it's incompatible with XBMC's subtitle rendering
     #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
     cd "${srcdir}/${_svnmod}"
 
@@ -126,10 +126,10 @@ package() {
         mv ${pkgdir}${_prefix}/share/doc/${docsf} ${pkgdir}${_prefix}/share/doc/${pkgname} || return 1 
      done
 	
-	# cleanup some stuff
-	msg "Cleanup unneeded files"
-	rm -rf ${pkgdir}/usr/share/xsessions
-	rm -f ${pkgdir}/usr/share/xbmc/FEH.py
+    # cleanup some stuff
+    msg "Cleanup unneeded files"
+    rm -rf ${pkgdir}/usr/share/xsessions
+    rm -f ${pkgdir}/usr/share/xbmc/FEH.py
 
     # strip
 	msg "Stripping binaries"
