@@ -17,7 +17,7 @@ url="http://xbmc.svn.sourceforge.net/viewvc/xbmc/trunk"
 license=('GPL' 'LGPL')
 depends=('curl' 'enca' 'faac' 'fribidi' 'gawk' 'glew' 'jasper' 'libgl' 'libmad' 'libmysqlclient' 
          'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'tre' 'unzip' 'libcdio' 'faad2' 'libsamplerate' 
-         'smbclient' 'libmms' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug' 'libvdpau')
+         'smbclient' 'libmms' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug' 'libvdpau' 'libass')
 makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs' 'libvdpau')
 optdepends=('lirc: remote controller support' 
             'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED' 
@@ -77,9 +77,9 @@ build() {
     ./configure --prefix=${_prefix} \
                 --disable-hal \
                 --enable-external-libraries \
+                --enable-external-libass \
                 --disable-external-ffmpeg \
                 --disable-external-python \
-                --disable-external-libass \
                 --enable-debug || return 1
 
     # Now (finally) build
