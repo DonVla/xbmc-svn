@@ -124,7 +124,7 @@ package() {
     install -d -m 0755 ${pkgdir}${_prefix}/share/doc/${pkgname} 
     for docsf in keymapping.txt README.linux; do 
         mv ${pkgdir}${_prefix}/share/doc/${docsf} ${pkgdir}${_prefix}/share/doc/${pkgname} || return 1 
-     done
+    done
 	
     # cleanup some stuff
     msg "Cleanup unneeded files"
