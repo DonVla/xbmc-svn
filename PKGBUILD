@@ -7,7 +7,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=30761
+pkgver=30809
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -15,11 +15,36 @@ conflicts=('xbmc' 'xbmc-pulse')
 arch=('i686' 'x86_64')
 url="http://xbmc.svn.sourceforge.net/viewvc/xbmc/trunk"
 license=('GPL' 'LGPL')
-depends=('curl' 'enca' 'faac' 'fribidi' 'glew' 'jasper' 'libgl' 'libmad' 'libmysqlclient'
-         'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'libcdio' 'faad2' 'libsamplerate'
-         'smbclient' 'libmms' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug' 'libass'
-         'bzip2' 'fontconfig' 'libxinerama' 'libxrandr' 'libxtst')
-makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs')
+depends=(
+         'bzip2' # provided by unzip in makedeps but needed
+         'lzo2' # provided by boost in makedeps but needed for TexturePacker
+         'libmms'
+         'libmad'
+         'libssh'
+         'faad2'
+         'libmpeg2'
+         'wavpack'
+         'libmodplug'
+         'libmysqlclient'
+         'fribidi'
+         'faac' # provides: libmp4v2
+         'smbclient' # provides: tdb, talloc
+         'libass' # provides: recode, enca, freetype2, fontconfig, libpng
+         'libsamplerate' # provides: libogg, libvorbis, flac, libsndfile, alsa-lib
+         'libmicrohttpd' # provides: curl
+         'libcdio' # provides: libcddb
+         # common : xcb-proto, xproto, libxdmcp, libxau, libxcb, kbproto, libx11, xextproto, libxext
+         # sdl provides: all common and renderproto, libxrender
+         'libxtst' # provides: all the same as sdl
+         'sdl_mixer' # provides: all sdl and libogg, libvorbis, libmikmod, smpeg
+         'sdl_image' # provides: all sdl and libpng, libjpeg, libtiff
+         'libxrandr' # provides: all sdl and randrproto
+         'glew' # provides: all common and inputproto, libxi, libice, libxt, xf86vidmodeproto, libxxf86vm, libdrm, fixesproto, libxfixes, damageproto, libxdamage, libgl, dri2proto, mesa
+         'jasper' # provides: all glew and freeglut, libxmu
+)
+
+makedepends=('subversion' 'boost' 
+'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs')
 optdepends=('lirc: remote controller support'
             'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED'
             'avahi: to use zerconf features (remote, etc...)'
