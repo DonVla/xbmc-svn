@@ -7,7 +7,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=30761
+pkgver=30830
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -15,20 +15,20 @@ conflicts=('xbmc' 'xbmc-pulse')
 arch=('i686' 'x86_64')
 url="http://xbmc.svn.sourceforge.net/viewvc/xbmc/trunk"
 license=('GPL' 'LGPL')
-depends=('curl' 'enca' 'faac' 'fribidi' 'gawk' 'glew' 'jasper' 'libgl' 'libmad' 'libmysqlclient' 
-         'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'tre' 'unzip' 'libcdio' 'faad2' 'libsamplerate' 
-         'smbclient' 'libmms' 'wavpack' 'libmicrohttpd' 'libmpeg2' 'libmodplug' 'libass')
-makedepends=('subversion' 'boost' 'cmake' 'gperf' 'nasm' 'unzip' 'zip' 'cvs')
-optdepends=('lirc: remote controller support' 
+depends=('bzip2' 'faac' 'faad2' 'fribidi' 'glew' 'jasper' 'libass' 'libcdio' 'libgl' 'libmad' 
+         'libmicrohttpd' 'libmms' 'libmodplug' 'libmpeg2' 'libmysqlclient' 'libsamplerate' 
+         'libxinerama' 'libxtst' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'smbclient' 'wavpack')
+makedepends=('cvs' 'boost' 'cmake' 'gperf' 'nasm' 'subversion' 'zip')
+optdepends=('avahi: to use zerconf features (remote, etc...)' 
             'gdb: for meaningful backtraces in case of trouble - STRONGLY RECOMMENDED' 
-            'avahi: to use zerconf features (remote, etc...)' 
-            'unrar: access compressed files without unpacking them' 
-            'upower: used to trigger suspend functionality' 
-            'udisks: automount external drives' 
+            'libssh: support for sshfs'
             'libvdpau: accelerated video playback for nvidia cards' 
             'libva-sds: accelerated video playback for nvidia, ati/amd and some intel cards'
+            'lirc: remote controller support' 
             'pulseaudio: pulseaudio support'
-            'libssh: support for sshfs')
+            'udisks: automount external drives' 
+            'upower: used to trigger suspend functionality' 
+            'unrar: access compressed files without unpacking them')
 options=('makeflags')
 install="${pkgname}.install"
 source=("FEH.sh") 
@@ -69,11 +69,6 @@ build() {
     ./bootstrap || return 1
 
     msg "Configuring XBMC" 
-    # some options - disable or enable stuff - copy them under ./configure
-               # --disable-pulse \
-               # --disable-avahi \
-               # --disable-webserver \
-               # --enable-ccache \
     ./configure --prefix=${_prefix} \
                 --disable-hal \
                 --enable-external-libraries \
@@ -93,45 +88,43 @@ package() {
     msg "Running make install" 
     make prefix=${pkgdir}${_prefix} install || return 1
 
-    # Replace FEH.py with FEH.sh (and thus remove external python dependency)
+# Replace FEH.py with FEH.sh (and thus remove external python dependency)
     install -D -m 0755 ${srcdir}/FEH.sh ${pkgdir}${_prefix}/share/xbmc/FEH.sh || return 1
-
-    #sed -i -e "s/python \\${_prefix}\/share\/xbmc\/FEH.py \"\$@\"/\\${_prefix}\/share\/xbmc\/FEH.sh/g" ${pkgdir}${_prefix}/bin/xbmc || return 1
     sed -i -e 's/^python \(.*\)FEH.py \(.*\)$/\1FEH.sh \2/' ${pkgdir}${_prefix}/bin/xbmc || return 1
 
-    # lsb_release fix
+# lsb_release fix
     sed -i -e 's/which lsb_release &> \/dev\/null/\[ -f \/etc\/arch-release ]/g' ${pkgdir}${_prefix}/bin/xbmc || return 1
 
     sed -i -e "s/lsb_release -a 2> \/dev\/null | sed -e 's\/\^\/    \/'/cat \/etc\/arch-release/g" ${pkgdir}${_prefix}/bin/xbmc || return 1
 
-    # .desktop files
+# .desktop files
     install -D -m 0644 ${srcdir}/${_svnmod}/tools/Linux/xbmc.desktop ${pkgdir}${_prefix}/share/applications/xbmc.desktop || return 1
 
     install -D -m 0644 ${srcdir}/${_svnmod}/tools/Linux/xbmc.png ${pkgdir}${_prefix}/share/pixmaps/xbmc.png || return 1
 
-    # Tools
+# Tools
     install -D -m 0755 ${srcdir}/${_svnmod}/xbmc-xrandr ${pkgdir}${_prefix}/share/xbmc/xbmc-xrandr || return 1
 
     install -D -m 0755 ${srcdir}/${_svnmod}/tools/TexturePacker/TexturePacker ${pkgdir}${_prefix}/share/xbmc/ || return 1
 
-    # Licenses
+# Licenses
     install -d -m 0755 ${pkgdir}${_prefix}/share/licenses/${pkgname} 
     for licensef in LICENSE.GPL copying.txt; do 
         mv ${pkgdir}${_prefix}/share/doc/${licensef} ${pkgdir}${_prefix}/share/licenses/${pkgname} || return 1 
     done 
- 
-    # Docs 
+
+# Docs 
     install -d -m 0755 ${pkgdir}${_prefix}/share/doc/${pkgname} 
     for docsf in keymapping.txt README.linux; do 
         mv ${pkgdir}${_prefix}/share/doc/${docsf} ${pkgdir}${_prefix}/share/doc/${pkgname} || return 1 
      done
-	
-    # cleanup some stuff
+
+# cleanup some stuff
     msg "Cleanup unneeded files"
     rm -rf ${pkgdir}/usr/share/xsessions
     rm -f ${pkgdir}/usr/share/xbmc/FEH.py
 
-    # strip
-	msg "Stripping binaries"
+# strip
+    msg "Stripping binaries"
     find $pkgdir -type f -exec strip {} \; >/dev/null 2>/dev/null
 }
