@@ -7,7 +7,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=30809
+pkgver=31021
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -90,6 +90,10 @@ build() {
 
     # fix lsb_release dependency: IS THIS NEEDED???
     sed -i -e 's:/usr/bin/lsb_release -d:cat /etc/arch-release:' xbmc/utils/SystemInfo.cpp || return 1
+
+    # Disable VDPAU for MPEG4-ASP to workaround a nVidia G210 related bug
+    # see http://forum.xbmc.org/showpost.php?p=503874&postcount=12
+    #sed -i ${srcdir}/XBMC/configure.in -e 's/--enable-vdpau/--enable-vdpau --disable-decoder=mpeg4_vdpau/' || return 1
 
     msg "Bootstrapping XBMC"
     ./bootstrap || return 1
