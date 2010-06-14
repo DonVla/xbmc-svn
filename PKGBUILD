@@ -7,7 +7,7 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=31021
+pkgver=31095
 pkgrel=1
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
@@ -105,11 +105,10 @@ build() {
                # --disable-webserver \
                # --enable-ccache \
     ./configure --prefix=${_prefix} \
-                --disable-hal \
                 --enable-external-libraries \
-                --enable-external-libass \
-                --disable-external-ffmpeg \
+                --enable-external-ffmpeg \
                 --disable-external-python \
+                --disable-hal \
                 --enable-debug || return 1
 
     # Now (finally) build
