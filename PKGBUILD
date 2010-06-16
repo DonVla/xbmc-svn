@@ -7,15 +7,15 @@
 # for his xbmc-vdpau-vdr PKGBUILD at https://archvdr.svn.sourceforge.net/svnroot/archvdr/trunk/archvdr/xbmc-vdpau-vdr/PKGBUILD
 
 pkgname=xbmc-svn
-pkgver=31021
-pkgrel=1
+pkgver=31122
+pkgrel=2
 pkgdesc="XBMC Media Center from SVN"
 provides=('xbmc')
 conflicts=('xbmc' 'xbmc-pulse')
 arch=('i686' 'x86_64')
 url="http://xbmc.svn.sourceforge.net/viewvc/xbmc/trunk"
 license=('GPL' 'LGPL')
-depends=('bzip2' 'faac' 'faad2' 'fribidi' 'glew' 'jasper' 'libass' 'libcdio' 'libgl' 'libmad' 
+depends=('bzip2' 'faac' 'faad2' 'ffmpeg' 'fribidi' 'glew' 'jasper' 'libass' 'libcdio' 'libgl' 'libmad' 
          'libmicrohttpd' 'libmms' 'libmodplug' 'libmpeg2' 'libmysqlclient' 'libsamplerate' 
          'libxinerama' 'libxtst' 'lzo2' 'sdl_image>=1.2.10' 'sdl_mixer' 'smbclient' 'wavpack')
 makedepends=('cvs' 'boost' 'cmake' 'gperf' 'nasm' 'subversion' 'zip')
@@ -56,7 +56,6 @@ build() {
     # Note on external-libs:
     #   - We cannot use external python because Arch's python was built with
     #     UCS2 unicode support, whereas xbmc expects UCS4 support
-    #   - According to an xbmc dev using external/system ffmpeg with xbmc is "pure stupid" :D
     cd "${srcdir}/${_svnmod}"
 
     # Archlinux Branding by SVN_REV
@@ -73,7 +72,7 @@ build() {
                 --disable-hal \
                 --enable-external-libraries \
                 --enable-external-libass \
-                --disable-external-ffmpeg \
+                --enable-external-ffmpeg \
                 --disable-external-python \
                 --enable-debug || return 1
 
